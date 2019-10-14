@@ -1,5 +1,5 @@
 ID: OpenSAPHANA9RG
-_schema-version: "2.1"
+_schema-version: '2.1'
 parameters:
   deploy_mode: html5-repo
 version: 0.0.1
@@ -12,11 +12,18 @@ modules:
       memory: 256M
     requires:
       - name: OpenSAPHANA9RG_html5_repo_runtime
+      - name: OpenSAPHANA9RG-uaa
   - name: OpenSAPHANA9RG_ui_deployer
     type: com.sap.html5.application-content
     path: OpenSAPHANA9RG_ui_deployer
     requires:
       - name: OpenSAPHANA9RG_html5_repo_host
+    build-parameters:
+      requires:
+        - name: web
+          artifacts:
+            - './*'
+          target-path: resources/web
   - name: OpenSAPHANA9RG-db
     type: hdb
     path: db
@@ -34,10 +41,17 @@ modules:
     provides:
       - name: srv_api
         properties:
-          url: ${default-url}
+          url: '${default-url}'
     requires:
       - name: OpenSAPHANA9RG-db-hdi-container
       - name: OpenSAPHANA9RG-uaa
+  - name: web
+    type: html5
+    path: web
+    build-parameters:
+      builder: grunt
+      supported-platforms: []
+      build-result: dist
 resources:
   - name: OpenSAPHANA9RG_html5_repo_runtime
     parameters:
@@ -52,12 +66,18 @@ resources:
   - name: OpenSAPHANA9RG-db-hdi-container
     type: com.sap.xs.hdi-container
     properties:
-      hdi-container-name: ${service-name}
+      hdi-container-name: '${service-name}'
   - name: OpenSAPHANA9RG-uaa
     type: org.cloudfoundry.managed-service
     parameters:
       service-plan: application
       service: xsuaa
       config:
-        xsappname: OpenSAPHANA9RG-${space}
+        xsappname: 'OpenSAPHANA9RG-${space}'
         tenant-mode: dedicated
+      path: ./xs-security.json
+  - name: dest_OpenSAPHANA9RG
+    parameters:
+      service-plan: lite
+      service: destination
+    type: org.cloudfoundry.managed-service
