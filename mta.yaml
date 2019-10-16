@@ -13,6 +13,12 @@ modules:
     requires:
       - name: OpenSAPHANA9RG_html5_repo_runtime
       - name: OpenSAPHANA9RG-uaa
+      - name: srv_api
+        group: destinations
+        properties:
+          name: srv_api
+          url: '~{url}'
+          forwardAuthToken: true
   - name: OpenSAPHANA9RG_ui_deployer
     type: com.sap.html5.application-content
     path: OpenSAPHANA9RG_ui_deployer
